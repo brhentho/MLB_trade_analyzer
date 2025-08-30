@@ -1,0 +1,367 @@
+# Baseball Trade AI - Cursor/Copilot Rules
+
+## Project Overview
+You are working on Baseball Trade AI, a web application that simulates realistic MLB trades using AI agents. The app allows users to find trades through natural language or build them manually.
+
+## Tech Stack
+- **Backend**: Python 3.11+, FastAPI, CrewAI, LangChain, Supabase
+- **Frontend**: Next.js 14+ (App Router), TypeScript, Tailwind CSS, shadcn/ui
+- **Database**: Supabase (PostgreSQL)
+- **AI**: OpenAI GPT-4/GPT-3.5
+- **Deployment**: Vercel (frontend), Railway (backend)
+
+## Code Style Guidelines
+
+### Python (Backend)
+- Use type hints for all functions
+- Follow PEP 8 with 88-char line limit (Black formatter)
+- Use async/await for all IO operations
+- Docstrings for all public functions
+- Handle errors with specific exceptions
+
+```python
+# Good example
+async def evaluate_trade(
+    trade_data: TradeProposal,
+    user_id: str
+) -> TradeEvaluation:
+    """
+    Evaluate a trade proposal using CrewAI agents.
+    
+    Args:
+        trade_data: The proposed trade details
+        user_id: ID of the user making the request
+        
+    Returns:
+        TradeEvaluation with grades and analysis
+        
+    Raises:
+        InvalidTradeError: If trade violates MLB rules
+        AgentTimeoutError: If evaluation takes too long
+    """
+    try:
+        crew = TradeEvaluatorCrew()
+        result = await crew.kickoff_async(trade_data)
+        return TradeEvaluation.from_crew_result(result)
+    except Exception as e:
+        logger.error(f"Trade evaluation failed: {e}")
+        raise
+```
+
+### TypeScript (Frontend)
+- Strict mode enabled
+- Interfaces over types when possible  
+- Async/await over promises
+- Proper error boundaries
+- Zod for runtime validation
+
+```typescript
+// Good example
+interface TradeProposal {
+  id: string;
+  teamA: TeamTrade;
+  teamB: TeamTrade;
+  teamC?: TeamTrade;
+}
+
+export async function evaluateTrade(
+  proposal: TradeProposal
+): Promise<TradeEvaluation> {
+  try {
+    const validated = TradeProposalSchema.parse(proposal);
+    const response = await api.post('/trades/evaluate', validated);
+    return response.data;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new ValidationError('Invalid trade data', error);
+    }
+    throw error;
+  }
+}
+```
+
+## CrewAI Patterns
+
+### Agent Creation
+```python
+# Always use factory pattern for agents
+class AgentFactory:
+    @staticmethod
+    def create_gm_agent(team: str, llm: ChatOpenAI) -> Agent:
+        return Agent(
+            role=f"{team} General Manager",
+            goal=f"Improve {team} roster within constraints",
+            backstory=get_team_backstory(team),
+            tools=[roster_tool, stats_tool, salary_tool],
+            llm=llm,
+            max_iter=3,  # Prevent infinite loops
+            memory=True
+        )
+```
+
+### Tool Creation
+```python
+# Tools should be focused and return structured data
+@tool
+def get_player_stats(player_name: str, season: int = 2024) -> dict:
+    """Get player statistics for evaluation."""
+    # Always validate inputs
+    if not player_name or len(player_name) < 2:
+        raise ValueError("Invalid player name")
+    
+    # Return structured data
+    return {
+        "player": player_name,
+        "stats": fetch_stats(player_name, season),
+        "source": "baseball-reference",
+        "updated_at": datetime.now().isoformat()
+    }
+```
+
+## Database Patterns
+
+### Supabase Queries
+```typescript
+// Always use Row Level Security
+const { data, error } = await supabase
+  .from('trades')
+  .select(`
+    *,
+    teams!inner(name, abbreviation),
+    reactions(count)
+  `)
+  .eq('user_id', userId)
+  .order('created_at', { ascending: false })
+  .limit(10);
+
+if (error) throw new DatabaseError(error.message);
+```
+
+### Data Validation
+```python
+# Always validate data before DB operations
+class TradeProposalCreate(BaseModel):
+    team_a_id: int = Field(..., gt=0, le=30)
+    team_a_receives: List[int] = Field(..., min_items=1)
+    team_b_id: int = Field(..., gt=0, le=30)
+    team_b_receives: List[int] = Field(..., min_items=1)
+    
+    @validator('team_a_id')
+    def teams_must_differ(cls, v, values):
+        if 'team_b_id' in values and v == values['team_b_id']:
+            raise ValueError('Teams must be different')
+        return v
+```
+
+## API Design
+
+### Endpoint Structure
+```python
+@router.post(
+    "/trades/evaluate",
+    response_model=TradeEvaluation,
+    status_code=status.HTTP_200_OK,
+    summary="Evaluate a trade proposal",
+    tags=["trades"]
+)
+async def evaluate_trade(
+    trade: TradeProposalCreate,
+    current_user: User = Depends(get_current_user),
+    db: Database = Depends(get_db)
+) -> TradeEvaluation:
+    """Always include auth, validation, and proper responses."""
+    # Implementation
+```
+
+### Error Handling
+```python
+# Consistent error responses
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=400,
+        content={
+            "error": "validation_error",
+            "message": str(exc),
+            "timestamp": datetime.now().isoformat()
+        }
+    )
+```
+
+## Frontend Components
+
+### Component Structure
+```typescript
+// components/TradeFinder.tsx
+interface TradeFinderProps {
+  initialTeam?: string;
+  onTradeFound?: (trades: TradeProposal[]) => void;
+}
+
+export function TradeFinder({ 
+  initialTeam = "Rockies",
+  onTradeFound 
+}: TradeFinderProps) {
+  // State management with Zustand
+  const { currentTeam, setCurrentTeam } = useTradeStore();
+  
+  // Data fetching with TanStack Query
+  const { mutate, isLoading } = useMutation({
+    mutationFn: findTrades,
+    onSuccess: (data) => {
+      onTradeFound?.(data.trades);
+    }
+  });
+  
+  // Always handle loading and error states
+  if (isLoading) return <TradeFinderSkeleton />;
+  
+  return (
+    // Component JSX
+  );
+}
+```
+
+## Testing Requirements
+
+### Backend Tests
+```python
+# Always test CrewAI agents with mocked LLMs
+@pytest.mark.asyncio
+async def test_trade_evaluation():
+    with patch('openai.ChatCompletion.create') as mock_llm:
+        mock_llm.return_value = mock_trade_response()
+        
+        crew = TradeEvaluatorCrew()
+        result = await crew.evaluate(sample_trade)
+        
+        assert result.grade_team_a in ['A', 'B', 'C', 'D', 'F']
+        assert len(result.analysis) > 100
+```
+
+### Frontend Tests
+```typescript
+// Always test user interactions and edge cases
+describe('TradeFinder', () => {
+  it('handles natural language input', async () => {
+    render(<TradeFinder />);
+    
+    const input = screen.getByPlaceholderText(/describe what/i);
+    await userEvent.type(input, 'starting pitcher with ERA under 4');
+    
+    const submitButton = screen.getByRole('button', { name: /find trades/i });
+    await userEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(screen.getByText(/trade proposals/i)).toBeInTheDocument();
+    });
+  });
+});
+```
+
+## Performance Guidelines
+
+### Caching Strategy
+```python
+# Cache expensive operations
+@cache(expire=3600)  # 1 hour
+async def get_team_roster(team_id: int) -> List[Player]:
+    """Cache roster data that changes infrequently."""
+    return await db.fetch_team_roster(team_id)
+
+# Don't cache user-specific data
+async def get_user_trades(user_id: str) -> List[Trade]:
+    """Never cache user-specific data."""
+    return await db.fetch_user_trades(user_id)
+```
+
+### Query Optimization
+```sql
+-- Always include necessary indexes
+CREATE INDEX idx_trades_user_created 
+ON trades(user_id, created_at DESC);
+
+-- Use materialized views for complex aggregations
+CREATE MATERIALIZED VIEW player_trade_values AS
+SELECT 
+    p.id,
+    p.name,
+    AVG(t.value) as avg_trade_value,
+    COUNT(t.id) as trade_count
+FROM players p
+JOIN trade_players t ON p.id = t.player_id
+GROUP BY p.id, p.name;
+```
+
+## Security Best Practices
+
+### Input Validation
+- Always validate and sanitize user input
+- Use parameterized queries
+- Implement rate limiting
+- Validate file uploads
+
+### API Security
+```python
+# Always use proper authentication
+@router.post("/trades", dependencies=[Depends(RateLimiter(calls=10, period=60))])
+async def create_trade(
+    trade: TradeCreate,
+    current_user: User = Depends(get_current_user_verified)
+):
+    # Only verified users can create trades
+    if not current_user.email_verified:
+        raise HTTPException(403, "Email verification required")
+```
+
+## Common Pitfalls to Avoid
+
+1. **Don't fetch all data** - Always paginate and filter
+2. **Don't trust client data** - Validate everything server-side
+3. **Don't ignore errors** - Log and handle gracefully
+4. **Don't hardcode values** - Use environment variables
+5. **Don't skip types** - TypeScript and Python type hints always
+
+## AI-Specific Guidelines
+
+### Prompt Engineering
+```python
+# Always structure prompts clearly
+TRADE_EVALUATION_PROMPT = """
+You are an MLB General Manager. Evaluate this trade:
+
+{team_a} receives: {team_a_players}
+{team_b} receives: {team_b_players}
+
+Consider:
+1. Current team needs
+2. Contract values
+3. Player ages and projected performance
+4. Prospect values
+
+Provide:
+- Letter grade for each team
+- 2-3 sentence explanation
+- Key risks and benefits
+"""
+```
+
+### Cost Management
+```python
+# Always provide fallbacks for expensive operations
+async def get_ai_evaluation(trade: Trade) -> Evaluation:
+    try:
+        # Try GPT-4 first
+        return await evaluate_with_gpt4(trade)
+    except RateLimitError:
+        # Fall back to GPT-3.5
+        logger.warning("GPT-4 rate limited, using GPT-3.5")
+        return await evaluate_with_gpt35(trade)
+```
+
+## Remember
+- User experience first - fast, intuitive, reliable
+- Baseball accuracy matters - use real rules and constraints
+- AI should enhance, not replace baseball knowledge
+- Test everything - unit, integration, and e2e
+- Monitor costs - AI tokens add up quickly
