@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Baseball Trade AI Custom Styles */
+:root {
+  /* Base Colors */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  
+  /* Interactive Colors */
+  --primary: #1e40af;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #334155;
+  --accent: #f1f5f9;
+  --accent-foreground: #1e293b;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  
+  /* Form Colors */
+  --border: #e2e8f0;
+  --input: #ffffff;
+  --ring: #3b82f6;
+  
+  /* Baseball-specific Design Tokens */
+  --baseball-field-green: #16a34a;
+  --baseball-dirt-brown: #a3a3a3;
+  --baseball-navy: #1e293b;
+  --baseball-red: #dc2626;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Base Colors - Dark Mode */
+    --background: #020617;
+    --foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --popover: #1e293b;
+    --popover-foreground: #f8fafc;
+    --card: #1e293b;
+    --card-foreground: #f8fafc;
+    
+    /* Interactive Colors - Dark Mode */
+    --primary: #3b82f6;
+    --primary-foreground: #ffffff;
+    --secondary: #334155;
+    --secondary-foreground: #e2e8f0;
+    --accent: #334155;
+    --accent-foreground: #f1f5f9;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    
+    /* Form Colors - Dark Mode */
+    --border: #475569;
+    --input: #334155;
+    --ring: #3b82f6;
+  }
+}
+
+/* Base styles */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Loading animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Focus management for accessibility */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Baseball-specific component styles */
+.trade-card {
+  @apply bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200;
+}
+
+.team-badge {
+  @apply inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700;
+}
+
+.position-badge {
+  @apply inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold text-white bg-blue-500;
+}
+
+/* Status indicators */
+.status-operational {
+  @apply bg-green-50 border-green-200 text-green-800;
+}
+
+.status-analyzing {
+  @apply bg-blue-50 border-blue-200 text-blue-800;
+}
+
+.status-error {
+  @apply bg-red-50 border-red-200 text-red-800;
+}

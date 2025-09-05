@@ -1,0 +1,130 @@
+/**
+ * Next.js Instrumentation Hook
+ * Initializes monitoring, tracing, and performance tracking
+ */
+
+export async function register() {
+  // Disable instrumentation completely for now to fix startup issues
+  console.log('Instrumentation disabled for development');
+  return;
+
+  console.log('Initializing instrumentation...');
+
+  // Initialize Sentry for error tracking
+  if (process.env.SENTRY_DSN) {
+    try {
+      const { init } = await import('@sentry/nextjs');
+      
+      init({
+        dsn: process.env.SENTRY_DSN,
+        environment: process.env.NODE_ENV,
+        tracesSampleRate: 1.0,
+        
+        // Performance monitoring
+        profilesSampleRate: 1.0,
+        
+        // Release tracking
+        release: process.env.VERCEL_GIT_COMMIT_SHA || 'local',
+        
+        // Custom tags
+        tags: {
+          service: 'baseball-trade-ai-frontend',
+          runtime: 'nodejs',
+        },
+        
+        // Filter out noise
+        beforeSend(event) {
+          // Filter out development errors
+          if (event.exception?.values?.[0]?.value?.includes('ResizeObserver loop')) {
+            return null;
+          }
+          
+          // Filter out network errors in development
+          if (process.env.NODE_ENV === 'development' && 
+              event.exception?.values?.[0]?.value?.includes('Network')) {
+            return null;
+          }
+          
+          return event;
+        },
+        
+        // Enhanced context
+        beforeSendTransaction(event) {
+          // Add custom context for better debugging
+          event.tags = {
+            ...event.tags,
+            build_time: process.env.BUILD_TIME,
+            commit: process.env.COMMIT_SHA,
+          };
+          
+          return event;
+        },
+      });
+      
+      console.log('Sentry initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize Sentry:', error);
+    }
+  }
+
+  // Initialize OpenTelemetry for detailed tracing (if needed)
+  if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
+    try {
+      const { NodeSDK } = await import('@opentelemetry/sdk-node');
+      const { getNodeAutoInstrumentations } = await import('@opentelemetry/auto-instrumentations-node');
+      
+      const sdk = new NodeSDK({
+        instrumentations: [
+          getNodeAutoInstrumentations({
+            // Disable noisy instrumentations
+            '@opentelemetry/instrumentation-fs': {
+              enabled: false,
+            },
+          }),
+        ],
+        serviceName: 'baseball-trade-ai-frontend',
+        serviceVersion: process.env.npm_package_version || '1.0.0',
+      });
+      
+      sdk.start();
+      console.log('OpenTelemetry initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize OpenTelemetry:', error);
+    }
+  }
+
+  // Initialize custom monitoring
+  try {
+    const { CacheWarmer } = await import('@/lib/cache-manager');
+    
+    // Warm critical caches on startup
+    const warmer = CacheWarmer.getInstance();
+    await warmer.warmCriticalCaches();
+    
+    console.log('Cache warming completed');
+  } catch (error) {
+    console.error('Failed to warm caches:', error);
+  }
+
+  // Set up periodic health checks
+  if (process.env.NODE_ENV === 'production') {
+    setInterval(async () => {
+      try {
+        // Perform health check
+        const response = await fetch('/api/health');
+        const health = await response.json();
+        
+        if (health.status !== 'operational') {
+          console.warn('Health check failed:', health);
+          
+          // Could trigger alerts or automatic recovery
+          // alertingService.notify('Health check failed', health);
+        }
+      } catch (error) {
+        console.error('Health check error:', error);
+      }
+    }, 5 * 60 * 1000); // Every 5 minutes
+  }
+
+  console.log('Instrumentation initialization completed');
+}

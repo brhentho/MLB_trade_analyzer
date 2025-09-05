@@ -12,7 +12,7 @@ cd /Users/brycehenthorn/Desktop/MLB_trade_analyzer/backend
 source venv/bin/activate
 python main.py
 ```
-The API will be available at: http://localhost:8080
+The API will be available at: http://localhost:8000
 
 ### 2. Start the Frontend (in a new terminal)
 ```bash
@@ -97,7 +97,7 @@ If you encounter issues:
 
 2. **Check API Status**:
    ```bash
-   curl http://localhost:8080/api/health
+   curl http://localhost:8000/api/health
    ```
 
 3. **View Logs**: The backend outputs detailed logs for debugging
