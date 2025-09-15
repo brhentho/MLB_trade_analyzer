@@ -12,7 +12,7 @@ const TeamParamsSchema = z.object({
 });
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { teamKey: string } }
 ) {
   const startTime = Date.now();
@@ -20,33 +20,20 @@ export async function GET(
   try {
     // Validate team key parameter
     const { teamKey } = TeamParamsSchema.parse(params);
-    const endpoint = `/api/teams/${teamKey}`;
     
-    // Get team data (roster and needs in parallel)
-    const [rosterData, needsData] = await Promise.allSettled([
-      serverAPI.teams.getRoster(teamKey),
-      serverAPI.teams.getNeeds(teamKey),
-    ]);
+    // Get team data 
+    const teamResponse = await serverAPI.teams.getById(teamKey);
 
     // Process results
     const teamData: any = {
       teamKey,
       timestamp: new Date().toISOString(),
+      data: teamResponse.success ? teamResponse.data : null,
+      error: !teamResponse.success ? teamResponse.error : null,
     };
 
-    if (rosterData.status === 'fulfilled') {
-      teamData.roster = rosterData.value;
-    } else {
-      console.warn(`Roster fetch failed for ${teamKey}:`, rosterData.reason);
-      teamData.rosterError = 'Failed to load roster data';
-    }
-
-    if (needsData.status === 'fulfilled') {
-      teamData.needs = needsData.value;
-    } else {
-      console.warn(`Needs fetch failed for ${teamKey}:`, needsData.reason);
-      teamData.needsError = 'Failed to load needs analysis';
-    }
+    // For now, just return basic team data
+    // TODO: Add roster and needs data when backend APIs are ready
 
     const responseTime = Date.now() - startTime;
 

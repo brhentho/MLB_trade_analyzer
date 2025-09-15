@@ -29,7 +29,7 @@ import {
 } from '@/hooks/use-api-queries';
 
 import { useStreamingAnalysis, useBackgroundSync } from '@/lib/streaming-api';
-import { type Team, type TradeAnalysis } from '@/lib/optimized-api';
+import { type TradeAnalysis } from '@/lib/optimized-api';
 
 // Components with error boundaries
 import { ComponentErrorBoundary, APIErrorBoundary } from '@/components/ui/error-boundary';
@@ -61,8 +61,7 @@ export default function OptimizedHomePage() {
   // Streaming and connectivity
   const { isOnline } = useBackgroundSync();
   const streamingAnalysis = useStreamingAnalysis(
-    currentAnalysis?.analysis_id || '',
-    !!currentAnalysis
+    currentAnalysis?.analysis_id || ''
   );
 
   // Memoized derived state
@@ -104,7 +103,7 @@ export default function OptimizedHomePage() {
       toast.success('AI trade analysis initiated!');
       
       // Start streaming updates
-      streamingAnalysis.connect();
+      streamingAnalysis.startStreaming(analysis.analysis_id);
       
     } catch (error) {
       const message = handleError(error);
@@ -163,7 +162,7 @@ export default function OptimizedHomePage() {
       );
     }
 
-    if (streamingAnalysis.streaming.connected) {
+    if (streamingAnalysis.isStreaming) {
       return (
         <div className="flex items-center space-x-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs">
           <CheckCircle className="h-3 w-3" />
@@ -173,7 +172,7 @@ export default function OptimizedHomePage() {
     }
 
     return null;
-  }, [isOnline, streamingAnalysis.streaming.connected]);
+  }, [isOnline, streamingAnalysis.isStreaming]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -358,9 +357,12 @@ export default function OptimizedHomePage() {
                   skeleton={<AnalysisProgressSkeleton />}
                 >
                   <OptimizedAnalysisProgress
-                    analysis={streamingAnalysis.analysis || currentAnalysis}
+                    analysis={currentAnalysis}
                     progress={streamingAnalysis.progress}
-                    streaming={streamingAnalysis.streaming}
+                    streaming={{
+                      connected: streamingAnalysis.isStreaming,
+                      ...(streamingAnalysis.error && { error: streamingAnalysis.error })
+                    }}
                     onUpdate={setCurrentAnalysis}
                   />
                 </ProgressiveLoading>
@@ -368,10 +370,10 @@ export default function OptimizedHomePage() {
             )}
 
             {/* Results Display */}
-            {(currentAnalysis?.status === 'completed' || streamingAnalysis.analysis?.status === 'completed') && (
+            {(currentAnalysis?.status === 'completed' || streamingAnalysis.data) && (
               <ComponentErrorBoundary>
                 <OptimizedResultsDisplay 
-                  analysis={streamingAnalysis.analysis || currentAnalysis} 
+                  analysis={currentAnalysis!} 
                 />
               </ComponentErrorBoundary>
             )}

@@ -1,0 +1,56 @@
+{
+  "start_time": "2025-09-12T22:34:35.526278",
+  "tests_run": 11,
+  "tests_passed": 9,
+  "tests_failed": 2,
+  "failures": [
+    {
+      "test": "Daily Update System",
+      "details": "Team mappings not working"
+    },
+    {
+      "test": "Prospect System",
+      "details": "Script ready but table needs to be created manually"
+    }
+  ],
+  "successes": [
+    {
+      "test": "Database Connection",
+      "details": "Found 30 teams"
+    },
+    {
+      "test": "MCP Get Teams",
+      "details": "Retrieved 5 teams"
+    },
+    {
+      "test": "MCP Get Players",
+      "details": "Retrieved 10 players"
+    },
+    {
+      "test": "MCP Search Players",
+      "details": "Found Aaron Judge (WAR: 11.3)"
+    },
+    {
+      "test": "MCP Get Team Roster",
+      "details": "Yankees has 15 players"
+    },
+    {
+      "test": "MCP Get Team Statistics",
+      "details": "Dodgers: 8 players"
+    },
+    {
+      "test": "MCP Update Player",
+      "details": "Updated and reverted Spencer Strider"
+    },
+    {
+      "test": "Historical Data",
+      "details": "320 players, 3 seasons, 29 teams, stars: Aaron Judge, Shohei Ohtani, Juan Soto"
+    },
+    {
+      "test": "Monitoring System",
+      "details": "320 players, 100.0% quality, DB: \u2705"
+    }
+  ],
+  "end_time": "2025-09-12T22:34:39.025128",
+  "duration": 3.49885
+}

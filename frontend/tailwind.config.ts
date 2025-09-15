@@ -9,47 +9,67 @@ const config: Config = {
   darkMode: ["class"],
   theme: {
     extend: {
-      // Baseball Trade AI Color System
+      // StatSlugger Brand Color System
       colors: {
-        // Brand Colors
+        // StatSlugger Brand Colors
+        statslugger: {
+          navy: {
+            primary: "#2C3E50", // StatSlugger dark navy
+            deep: "#1A252F", // Deeper navy for sections
+            border: "#34495E", // Border color
+          },
+          orange: {
+            primary: "#F39C12", // Primary orange accent
+            secondary: "#E67E22", // Secondary orange
+            light: "#F8C471", // Light orange for hovers
+            dark: "#D68910", // Dark orange for active states
+          },
+          text: {
+            primary: "#FFFFFF", // Primary white text
+            secondary: "#CBD5E1", // Secondary light gray text
+            muted: "#94A3B8", // Muted text color
+          }
+        },
+        
+        // Brand Colors (updated to StatSlugger)
         brand: {
-          primary: "#1e40af", // Blue 700 - Primary brand color
-          secondary: "#dc2626", // Red 600 - Accent/alert color
-          tertiary: "#059669", // Green 600 - Success/positive
+          primary: "#F39C12", // Orange - Primary brand color
+          secondary: "#2C3E50", // Navy - Secondary brand color
+          tertiary: "#27AE60", // Green - Success/positive
         },
         
-        // Semantic Colors
+        // Semantic Colors - Updated for StatSlugger Dark Theme
         baseball: {
-          infield: "#22c55e", // Green 500 - Infield positions
-          outfield: "#3b82f6", // Blue 500 - Outfield positions
-          pitcher: "#f59e0b", // Amber 500 - Pitchers
-          catcher: "#8b5cf6", // Violet 500 - Catchers
-          dh: "#ef4444", // Red 500 - Designated Hitter
+          infield: "#27AE60", // Green - Infield positions
+          outfield: "#3498DB", // Blue - Outfield positions  
+          pitcher: "#F39C12", // Orange - Pitchers (matches brand)
+          catcher: "#9B59B6", // Purple - Catchers
+          dh: "#E74C3C", // Red - Designated Hitter
         },
         
-        // Team Status Colors
+        // Team Status Colors - StatSlugger Theme
         team: {
-          "win-now": "#2563eb", // Blue 600 - Competitive teams
-          retool: "#7c3aed", // Violet 600 - Rebuilding teams
-          rebuild: "#ea580c", // Orange 600 - Full rebuild
+          "win-now": "#F39C12", // Orange - Competitive teams (matches brand)
+          retool: "#9B59B6", // Purple - Rebuilding teams
+          rebuild: "#3498DB", // Blue - Full rebuild
         },
         
-        // Performance Colors
+        // Performance Colors - Orange-centric System
         performance: {
-          excellent: "#16a34a", // Green 600
-          good: "#65a30d", // Lime 600
-          average: "#ca8a04", // Yellow 600
-          poor: "#dc2626", // Red 600
-          terrible: "#991b1b", // Red 800
+          excellent: "#F39C12", // Orange - Excellent (brand primary)
+          good: "#27AE60", // Green - Good
+          average: "#F1C40F", // Yellow - Average
+          poor: "#E74C3C", // Red - Poor
+          terrible: "#C0392B", // Dark Red - Terrible
         },
         
-        // Financial Colors
+        // Financial Colors - Updated for Dark Theme
         financial: {
-          luxury: "#dc2626", // Red 600 - Over luxury tax
-          high: "#ea580c", // Orange 600 - High payroll
-          medium: "#ca8a04", // Yellow 600 - Medium payroll
-          low: "#16a34a", // Green 600 - Low payroll
-          rookie: "#059669", // Emerald 600 - Rookie contracts
+          luxury: "#E74C3C", // Red - Over luxury tax
+          high: "#E67E22", // Orange secondary - High payroll
+          medium: "#F1C40F", // Yellow - Medium payroll
+          low: "#27AE60", // Green - Low payroll
+          rookie: "#2ECC71", // Emerald - Rookie contracts
         },
         
         // Design System Colors
@@ -88,11 +108,11 @@ const config: Config = {
         },
       },
       
-      // Typography System
+      // Typography System - StatSlugger (Inter-focused)
       fontFamily: {
-        sans: ['var(--font-geist-sans)', 'Inter', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-geist-mono)', 'Consolas', 'Monaco', 'monospace'],
-        display: ['var(--font-geist-sans)', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace'],
+        display: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       
       fontSize: {

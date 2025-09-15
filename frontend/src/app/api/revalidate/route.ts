@@ -7,14 +7,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
 import { CACHE_TAGS } from '@/lib/server-api';
 
-// Revalidation secret for security
-const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET || 'development-secret';
+// Revalidation secret for security - SECURE IMPLEMENTATION
+const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET;
+
+// Fail fast if secret is not configured in production
+if (!REVALIDATION_SECRET && process.env.NODE_ENV === 'production') {
+  throw new Error('REVALIDATION_SECRET environment variable is required in production');
+}
+
+// Use fallback only in development
+const SECRET_TO_USE = REVALIDATION_SECRET || (
+  process.env.NODE_ENV === 'development' 
+    ? 'dev-' + crypto.randomUUID() 
+    : (() => { throw new Error('REVALIDATION_SECRET required'); })()
+);
 
 export async function POST(request: NextRequest) {
   try {
     // Verify secret
     const secret = request.nextUrl.searchParams.get('secret');
-    if (secret !== REVALIDATION_SECRET) {
+    if (secret !== SECRET_TO_USE) {
       return NextResponse.json(
         { error: 'Invalid secret' },
         { status: 401 }
@@ -26,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     switch (type) {
       case 'teams':
-        revalidateTag(CACHE_TAGS.TEAMS);
+        revalidateTag(CACHE_TAGS.teams);
         if (targets?.length) {
           targets.forEach((teamKey: string) => {
             revalidateTag(`team-${teamKey}`);
@@ -111,7 +123,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   // Health check endpoint
   return NextResponse.json({
     service: 'revalidation',

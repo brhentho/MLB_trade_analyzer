@@ -103,9 +103,10 @@ const Navigation: React.FC<NavigationProps> = ({
           disabled={item.disabled}
           className={cn(
             "w-full flex items-center gap-3 px-3 py-2 rounded-md text-left transition-colors",
-            "hover:bg-muted focus:bg-muted focus:outline-none",
+            "text-statslugger-text-secondary hover:bg-statslugger-navy-primary hover:text-statslugger-text-primary",
+            "focus:bg-statslugger-navy-primary focus:text-statslugger-orange-primary focus:outline-none",
             "disabled:opacity-50 disabled:pointer-events-none",
-            active && "bg-primary/10 text-primary font-medium",
+            active && "bg-statslugger-orange-primary/20 text-statslugger-orange-primary font-medium border-r-2 border-statslugger-orange-primary",
             depth > 0 && "ml-6 text-sm",
             variant === "horizontal" && "w-auto px-4"
           )}
@@ -175,10 +176,10 @@ const Navigation: React.FC<NavigationProps> = ({
               aria-hidden="true"
             />
             
-            <div className="fixed inset-y-0 left-0 z-50 w-64 bg-background border-r border-border md:hidden">
+            <div className="fixed inset-y-0 left-0 z-50 w-64 bg-statslugger-navy-deep border-r border-statslugger-navy-border md:hidden">
               <div className="flex flex-col h-full">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-border">
+                <div className="flex items-center justify-between p-4 border-b border-statslugger-navy-border">
                   {logo}
                   <Button
                     variant="ghost"
@@ -199,7 +200,7 @@ const Navigation: React.FC<NavigationProps> = ({
 
                 {/* Actions */}
                 {actions && (
-                  <div className="p-4 border-t border-border">
+                  <div className="p-4 border-t border-statslugger-navy-border">
                     {actions}
                   </div>
                 )}
@@ -257,9 +258,9 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header
       className={cn(
-        "border-b border-border",
+        "border-b border-statslugger-navy-border",
         sticky && "sticky top-0 z-40",
-        transparent ? "bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60" : "bg-background",
+        transparent ? "bg-statslugger-navy-primary/80 backdrop-blur supports-[backdrop-filter]:bg-statslugger-navy-primary/60" : "bg-statslugger-navy-primary",
         className
       )}
     >
@@ -311,7 +312,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       className={cn(
-        "flex flex-col h-full bg-background border-r border-border",
+        "flex flex-col h-full bg-statslugger-navy-deep border-r border-statslugger-navy-border",
         collapsed ? "w-16" : "w-64",
         "transition-all duration-300 ease-out",
         className
@@ -320,7 +321,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       {/* Logo */}
       {logo && (
-        <div className="p-4 border-b border-border">
+        <div className="p-4 border-b border-statslugger-navy-border">
           {logo}
         </div>
       )}
@@ -335,7 +336,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Footer */}
       {footer && (
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-statslugger-navy-border">
           {footer}
         </div>
       )}

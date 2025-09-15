@@ -37,9 +37,6 @@ class SchedulerService:
         # Schedule daily data updates at 6 AM ET
         schedule.every().day.at("06:00").do(self._run_daily_update)
         
-        # Schedule roster updates every 4 hours during season
-        schedule.every(4).hours.do(self._run_roster_update)
-        
         # Schedule weekly cleanup on Sundays at 3 AM ET
         schedule.every().sunday.at("03:00").do(self._run_weekly_cleanup)
         
@@ -76,13 +73,6 @@ class SchedulerService:
         except Exception as e:
             logger.error(f"Daily update failed: {e}")
     
-    def _run_roster_update(self):
-        """Run roster update task"""
-        logger.info("Starting scheduled roster update...")
-        try:
-            asyncio.run(self._async_roster_update())
-        except Exception as e:
-            logger.error(f"Roster update failed: {e}")
     
     def _run_weekly_cleanup(self):
         """Run weekly cleanup task"""
@@ -120,38 +110,6 @@ class SchedulerService:
             logger.error(f"Daily update error: {e}")
             await self._log_update_result("daily_update", {"error": str(e)}, 0, error=True)
     
-    async def _async_roster_update(self):
-        """Async roster update implementation"""
-        logger.info("Running roster update...")
-        
-        try:
-            # Fetch current rosters
-            rosters = await data_service.fetch_current_rosters()
-            
-            if rosters:
-                all_players = []
-                for team_players in rosters.values():
-                    all_players.extend(team_players)
-                
-                # Update database
-                success_count = await supabase_service.bulk_upsert_players([
-                    {
-                        'name': p.name,
-                        'team_id': p.team_id,
-                        'position': p.position,
-                        'age': p.age,
-                        'salary': p.salary,
-                        'contract_years': p.contract_years,
-                        'war': p.war,
-                        'stats': p.stats
-                    }
-                    for p in all_players
-                ])
-                
-                logger.info(f"Roster update: {success_count} players updated")
-            
-        except Exception as e:
-            logger.error(f"Roster update error: {e}")
     
     async def _async_weekly_cleanup(self):
         """Async weekly cleanup implementation"""

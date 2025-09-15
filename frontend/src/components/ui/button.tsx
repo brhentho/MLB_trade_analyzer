@@ -50,51 +50,51 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary: [
-        "bg-primary text-primary-foreground shadow-sm",
-        "hover:bg-primary/90 hover:shadow-md",
-        "focus-visible:ring-primary",
+        "bg-gradient-to-r from-statslugger-orange-primary to-statslugger-orange-secondary text-white shadow-md",
+        "hover:from-statslugger-orange-secondary hover:to-statslugger-orange-dark hover:shadow-lg",
+        "focus-visible:ring-statslugger-orange-primary focus-visible:ring-offset-statslugger-navy-primary",
         "active:scale-[0.98]"
       ],
       secondary: [
-        "bg-secondary text-secondary-foreground shadow-sm",
-        "hover:bg-secondary/80 hover:shadow-md",
-        "focus-visible:ring-secondary",
+        "bg-statslugger-navy-primary border border-statslugger-navy-border text-statslugger-text-secondary shadow-sm",
+        "hover:bg-statslugger-navy-border hover:text-statslugger-text-primary hover:shadow-md",
+        "focus-visible:ring-statslugger-orange-primary focus-visible:ring-offset-statslugger-navy-primary",
         "active:scale-[0.98]"
       ],
       outline: [
-        "border border-border bg-background text-foreground",
-        "hover:bg-muted hover:shadow-sm",
-        "focus-visible:ring-ring",
+        "border-2 border-statslugger-orange-primary bg-transparent text-statslugger-orange-primary",
+        "hover:bg-statslugger-orange-primary hover:text-white hover:shadow-md",
+        "focus-visible:ring-statslugger-orange-primary focus-visible:ring-offset-statslugger-navy-primary",
         "active:scale-[0.98]"
       ],
       ghost: [
-        "text-foreground",
-        "hover:bg-muted hover:shadow-sm",
-        "focus-visible:ring-ring",
+        "text-statslugger-text-primary",
+        "hover:bg-statslugger-navy-primary hover:text-statslugger-orange-primary hover:shadow-sm",
+        "focus-visible:ring-statslugger-orange-primary focus-visible:ring-offset-statslugger-navy-primary",
         "active:scale-[0.98]"
       ],
       destructive: [
-        "bg-destructive text-destructive-foreground shadow-sm",
-        "hover:bg-destructive/90 hover:shadow-md",
-        "focus-visible:ring-destructive",
+        "bg-red-600 text-white shadow-sm",
+        "hover:bg-red-700 hover:shadow-md",
+        "focus-visible:ring-red-500 focus-visible:ring-offset-statslugger-navy-primary",
         "active:scale-[0.98]"
       ],
       baseball: [
-        "bg-gradient-to-r from-baseball-field-green to-emerald-600 text-white shadow-md",
-        "hover:from-green-600 hover:to-emerald-700 hover:shadow-lg",
-        "focus-visible:ring-emerald-500",
+        "bg-gradient-to-r from-statslugger-orange-primary via-statslugger-orange-secondary to-statslugger-orange-primary text-white shadow-md",
+        "hover:shadow-lg hover:from-statslugger-orange-secondary hover:to-statslugger-orange-dark",
+        "focus-visible:ring-statslugger-orange-primary focus-visible:ring-offset-statslugger-navy-primary",
         "active:scale-[0.98]"
       ],
       "team-primary": [
-        "bg-team-win-now text-white shadow-md",
-        "hover:bg-blue-700 hover:shadow-lg",
-        "focus-visible:ring-blue-500",
+        "bg-gradient-to-r from-statslugger-orange-primary to-yellow-500 text-white shadow-md",
+        "hover:from-statslugger-orange-secondary hover:to-yellow-600 hover:shadow-lg",
+        "focus-visible:ring-statslugger-orange-primary focus-visible:ring-offset-statslugger-navy-primary",
         "active:scale-[0.98]"
       ],
       "team-secondary": [
-        "bg-team-retool text-white shadow-md",
-        "hover:bg-violet-700 hover:shadow-lg",
-        "focus-visible:ring-violet-500",
+        "bg-gradient-to-r from-purple-600 to-statslugger-orange-secondary text-white shadow-md",
+        "hover:from-purple-700 hover:to-statslugger-orange-dark hover:shadow-lg",
+        "focus-visible:ring-purple-500 focus-visible:ring-offset-statslugger-navy-primary",
         "active:scale-[0.98]"
       ],
     };

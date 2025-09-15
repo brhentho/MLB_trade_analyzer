@@ -16,11 +16,11 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", interactive = false, loading = false, children, ...props }, ref) => {
     const variants = {
       default: "card",
-      outline: "card border-2",
-      filled: "card bg-muted",
-      elevated: "card shadow-lg",
+      outline: "card border-2 border-statslugger-orange-primary/30",
+      filled: "card bg-statslugger-navy-primary",
+      elevated: "card shadow-lg shadow-black/25",
       glass: "glass-effect rounded-lg border",
-      baseball: "card border-2 border-baseball-field-green/20 bg-gradient-to-br from-white to-green-50",
+      baseball: "card border-2 border-statslugger-orange-primary/20 bg-gradient-to-br from-statslugger-navy-deep to-statslugger-navy-primary",
     };
 
     return (
@@ -125,7 +125,7 @@ const PlayerCard = React.forwardRef<HTMLDivElement, PlayerCardProps>(
         <CardHeader className={compact ? "p-0 pb-2" : "p-0 pb-3"}>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <div className="position-badge bg-baseball-infield">
+              <div className="position-badge">
                 {player.position}
               </div>
               {player.jersey && (

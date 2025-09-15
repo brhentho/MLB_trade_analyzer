@@ -230,7 +230,7 @@ function aggregateWebVitals(cutoffTime: number) {
     const values = aggregated[name];
     aggregated[name] = {
       count: values.length,
-      avg: values.reduce((a, b) => a + b, 0) / values.length,
+      avg: values.reduce((a: number, b: number) => a + b, 0) / values.length,
       min: Math.min(...values),
       max: Math.max(...values),
       p95: percentile(values, 95),
@@ -259,7 +259,7 @@ function aggregateCustomMetrics(cutoffTime: number) {
     const values = aggregated[name];
     aggregated[name] = {
       count: values.length,
-      avg: values.reduce((a, b) => a + b, 0) / values.length,
+      avg: values.reduce((a: number, b: number) => a + b, 0) / values.length,
       min: Math.min(...values),
       max: Math.max(...values),
     };
@@ -316,10 +316,10 @@ function percentile(values: number[], p: number): number {
   const upper = Math.ceil(index);
   
   if (lower === upper) {
-    return sorted[lower];
+    return sorted[lower] ?? 0;
   }
   
-  return sorted[lower] + (sorted[upper] - sorted[lower]) * (index - lower);
+  return (sorted[lower] ?? 0) + ((sorted[upper] ?? 0) - (sorted[lower] ?? 0)) * (index - lower);
 }
 
 function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {

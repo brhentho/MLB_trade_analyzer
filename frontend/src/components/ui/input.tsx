@@ -57,9 +57,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const states = {
       default: "",
-      error: "border-destructive focus:ring-destructive",
-      success: "border-green-500 focus:ring-green-500",
-      warning: "border-yellow-500 focus:ring-yellow-500",
+      error: "border-red-500 focus:border-red-500 focus:ring-red-500/20",
+      success: "border-green-500 focus:border-green-500 focus:ring-green-500/20",
+      warning: "border-yellow-500 focus:border-yellow-500 focus:ring-yellow-500/20",
     };
 
     // Determine ARIA attributes
@@ -73,7 +73,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className="relative">
         {/* Left Icon */}
         {icon && iconPosition === "left" && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-statslugger-text-muted pointer-events-none">
             <div className="h-4 w-4" aria-hidden="true">
               {icon}
             </div>
@@ -98,7 +98,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         {/* Right Icon */}
         {icon && iconPosition === "right" && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none">
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-statslugger-text-muted pointer-events-none">
             <div className="h-4 w-4" aria-hidden="true">
               {icon}
             </div>
@@ -121,7 +121,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {/* Loading indicator */}
         {loading && !icon && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-            <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="h-4 w-4 border-2 border-statslugger-orange-primary border-t-transparent rounded-full animate-spin" />
           </div>
         )}
 

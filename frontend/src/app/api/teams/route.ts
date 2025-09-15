@@ -3,9 +3,9 @@
  * Provides cached team data with proper error handling and validation
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { serverAPI } from '@/lib/server-api';
-import { z } from 'zod';
+// import { z } from 'zod'; // Unused for now
 
 // Response time logging
 function logResponseTime(startTime: number, endpoint: string) {
@@ -15,7 +15,7 @@ function logResponseTime(startTime: number, endpoint: string) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const startTime = Date.now();
   const endpoint = '/api/teams';
 

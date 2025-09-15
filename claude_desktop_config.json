@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "baseball-trade-ai": {
+      "command": "python3",
+      "args": [
+        "/Users/brycehenthorn/Desktop/github repos/MLB_trade_analyzer/mcp_server.py",
+        "--serve"
+      ],
+      "env": {
+        "SUPABASE_URL": "your-supabase-url-here",
+        "SUPABASE_SECRET_KEY": "your-supabase-service-key-here"
+      }
+    }
+  }
+}

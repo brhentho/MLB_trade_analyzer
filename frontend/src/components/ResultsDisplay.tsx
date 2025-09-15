@@ -77,10 +77,10 @@ export default function ResultsDisplay({ analysis }: ResultsDisplayProps) {
   ];
 
   const getConfidenceColor = (confidence?: number) => {
-    if (!confidence) return 'text-gray-600 bg-gray-50';
-    if (confidence >= 0.8) return 'text-green-600 bg-green-50';
-    if (confidence >= 0.6) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
+    if (!confidence) return 'text-statslugger-text-muted bg-statslugger-navy-primary';
+    if (confidence >= 0.8) return 'text-green-400 bg-green-900/30';
+    if (confidence >= 0.6) return 'text-yellow-400 bg-yellow-900/30';
+    return 'text-red-400 bg-red-900/30';
   };
 
   const getConfidenceLabel = (confidence?: number) => {
@@ -92,35 +92,35 @@ export default function ResultsDisplay({ analysis }: ResultsDisplayProps) {
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
-      case 'low': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'high': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'low': return 'text-green-400';
+      case 'medium': return 'text-yellow-400';
+      case 'high': return 'text-red-400';
+      default: return 'text-statslugger-text-muted';
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div className="bg-statslugger-navy-deep rounded-lg shadow-sm border border-statslugger-navy-border">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200">
+      <div className="px-6 py-4 border-b border-statslugger-navy-border">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-statslugger-text-primary">
               Trade Analysis Results
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-statslugger-text-secondary">
               AI-powered recommendations for {analysis.team}
             </p>
           </div>
           <div className="flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
-            <span className="text-sm font-medium text-green-600">Analysis Complete</span>
+            <span className="text-sm font-medium text-green-400">Analysis Complete</span>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-statslugger-navy-border">
         <div className="px-6">
           <nav className="-mb-px flex space-x-8">
             {tabs.map((tab) => {
@@ -131,8 +131,8 @@ export default function ResultsDisplay({ analysis }: ResultsDisplayProps) {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-statslugger-orange-primary text-statslugger-orange-primary'
+                      : 'border-transparent text-statslugger-text-muted hover:text-statslugger-text-primary hover:border-statslugger-orange-primary/30'
                   }`}
                 >
                   <TabIcon className="h-4 w-4" />
@@ -150,8 +150,8 @@ export default function ResultsDisplay({ analysis }: ResultsDisplayProps) {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             <div>
-              <h4 className="text-lg font-medium text-gray-900 mb-3">Analysis Summary</h4>
-              <p className="text-gray-700 leading-relaxed">
+              <h4 className="text-lg font-medium text-statslugger-text-primary mb-3">Analysis Summary</h4>
+              <p className="text-statslugger-text-secondary leading-relaxed">
                 {analysisSummary}
               </p>
             </div>

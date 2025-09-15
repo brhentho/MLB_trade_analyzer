@@ -3,16 +3,16 @@
  * Provides comprehensive application health status
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { serverAPI } from '@/lib/server-api';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const startTime = Date.now();
   
   try {
     // Parallel health checks
     const [backendHealth, teamsCheck] = await Promise.allSettled([
-      serverAPI.system.getHealth(),
+      serverAPI.health.check(),
       serverAPI.teams.getAll(),
     ]);
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
         database: {
           status: teamsCheck.status === 'fulfilled' ? 'healthy' : 'unhealthy',
           teamsCount: teamsCheck.status === 'fulfilled' 
-            ? teamsCheck.value?.count || 0 
+            ? (Array.isArray(teamsCheck.value?.data) ? teamsCheck.value.data.length : 0)
             : 0,
           ...(teamsCheck.status === 'rejected' && {
             error: teamsCheck.reason?.message || 'Database unreachable',

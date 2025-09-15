@@ -60,7 +60,7 @@ export default function TradeRequestForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Request Input */}
       <div>
-        <label htmlFor="request" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="request" className="block text-sm font-medium text-statslugger-text-primary mb-2">
           What type of player are you looking for?
         </label>
         <textarea
@@ -69,10 +69,10 @@ export default function TradeRequestForm({
           onChange={(e) => setRequest(e.target.value)}
           placeholder="Describe the player you need in natural language..."
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+          className="w-full px-3 py-2 border border-statslugger-navy-border bg-statslugger-navy-deep text-statslugger-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-statslugger-orange-primary focus:border-statslugger-orange-primary resize-none placeholder:text-statslugger-text-muted"
           disabled={loading}
         />
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-statslugger-text-muted">
           Be specific about position, performance metrics, contract situation, or team needs
         </p>
       </div>
@@ -81,7 +81,7 @@ export default function TradeRequestForm({
       <div>
         <div className="flex items-center space-x-2 mb-3">
           <Lightbulb className="h-4 w-4 text-yellow-500" />
-          <span className="text-sm font-medium text-gray-700">Example Requests</span>
+          <span className="text-sm font-medium text-statslugger-text-primary">Example Requests</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {exampleRequests.slice(0, 6).map((example, index) => (
@@ -89,7 +89,7 @@ export default function TradeRequestForm({
               key={index}
               type="button"
               onClick={() => handleExampleClick(example)}
-              className="text-left p-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded border border-blue-200 transition-colors"
+              className="text-left p-2 text-sm text-statslugger-orange-primary hover:text-statslugger-orange-secondary hover:bg-statslugger-orange-primary/10 rounded border border-statslugger-orange-primary/30 transition-colors"
               disabled={loading}
             >
               &ldquo;{example}&rdquo;
@@ -102,7 +102,7 @@ export default function TradeRequestForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Urgency */}
         <div>
-          <label htmlFor="urgency" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="urgency" className="block text-sm font-medium text-statslugger-text-primary mb-2">
             <Clock className="inline h-4 w-4 mr-1" />
             Urgency Level
           </label>
@@ -110,7 +110,7 @@ export default function TradeRequestForm({
             id="urgency"
             value={urgency}
             onChange={(e) => setUrgency(e.target.value as 'low' | 'medium' | 'high')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-statslugger-navy-border bg-statslugger-navy-deep text-statslugger-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-statslugger-orange-primary focus:border-statslugger-orange-primary"
             disabled={loading}
           >
             <option value="low">Low - Exploring options</option>
@@ -121,7 +121,7 @@ export default function TradeRequestForm({
 
         {/* Budget Limit */}
         <div>
-          <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="budget" className="block text-sm font-medium text-statslugger-text-primary mb-2">
             <DollarSign className="inline h-4 w-4 mr-1" />
             Budget Limit (Million $)
           </label>
@@ -133,10 +133,10 @@ export default function TradeRequestForm({
             placeholder="e.g., 25"
             min="0"
             step="0.1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-statslugger-navy-border bg-statslugger-navy-deep text-statslugger-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-statslugger-orange-primary focus:border-statslugger-orange-primary placeholder:text-statslugger-text-muted"
             disabled={loading}
           />
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-statslugger-text-muted">
             Optional: Maximum salary you&rsquo;re willing to take on
           </p>
         </div>
@@ -144,18 +144,18 @@ export default function TradeRequestForm({
 
       {/* Team Context */}
       {selectedTeamData && (
-        <div className="p-4 bg-gray-50 rounded-lg">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">
+        <div className="p-4 bg-statslugger-navy-primary rounded-lg border border-statslugger-navy-border">
+          <h4 className="text-sm font-medium text-statslugger-text-primary mb-2">
             {selectedTeamData.name} Context
           </h4>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="font-medium">Philosophy:</span>
-              <p className="text-gray-600">{selectedTeamData.philosophy}</p>
+              <p className="text-statslugger-text-secondary">{selectedTeamData.philosophy}</p>
             </div>
             <div>
               <span className="font-medium">Window:</span>
-              <p className="text-gray-600 capitalize">{selectedTeamData.competitive_window}</p>
+              <p className="text-statslugger-text-secondary capitalize">{selectedTeamData.competitive_window}</p>
             </div>
           </div>
         </div>
@@ -167,8 +167,8 @@ export default function TradeRequestForm({
         disabled={loading || !request.trim() || !selectedTeam}
         className={`w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors ${
           loading || !request.trim() || !selectedTeam
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+            ? 'bg-statslugger-navy-border text-statslugger-text-muted cursor-not-allowed'
+            : 'bg-gradient-to-r from-statslugger-orange-primary to-statslugger-orange-secondary text-white hover:from-statslugger-orange-secondary hover:to-statslugger-orange-dark hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-statslugger-orange-primary focus:ring-offset-2 focus:ring-offset-statslugger-navy-primary'
         }`}
       >
         {loading ? (
@@ -185,7 +185,7 @@ export default function TradeRequestForm({
       </button>
 
       {!selectedTeam && (
-        <p className="text-center text-sm text-red-600">
+        <p className="text-center text-sm text-red-400">
           Please select a team first
         </p>
       )}

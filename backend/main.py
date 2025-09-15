@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Query, Path
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Query, Path, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -84,17 +84,67 @@ if CREWAI_AVAILABLE and FrontOfficeCrew:
 app = FastAPI(
     title="Baseball Trade AI",
     description="AI-powered MLB trade analysis platform with real-time multi-agent evaluation",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url="/docs" if os.getenv("ENVIRONMENT") == "development" else None,
+    redoc_url="/redoc" if os.getenv("ENVIRONMENT") == "development" else None
 )
 
-# Add CORS middleware
+# Add CORS middleware - SECURE CONFIGURATION
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Development frontend
+    "https://localhost:3000",  # HTTPS development
+    "https://baseball-trade-ai.vercel.app",  # Production frontend
+    "https://www.baseball-trade-ai.com",  # Custom domain if applicable
+]
+
+# Only allow all origins in development
+if os.getenv("ENVIRONMENT") == "development":
+    ALLOWED_ORIGINS.append("*")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure for your frontend domain in production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Authorization",
+        "Content-Type", 
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "X-API-Key"
+    ],
+    expose_headers=["X-Rate-Limit-Remaining", "X-Rate-Limit-Reset"]
 )
+
+# Add security headers middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    
+    # Security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    
+    # Only add HSTS in production with HTTPS
+    if os.getenv("ENVIRONMENT") == "production":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    
+    # Content Security Policy
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: https:; "
+        "connect-src 'self' https://api.openai.com https://*.supabase.co https://*.anthropic.com"
+    )
+    response.headers["Content-Security-Policy"] = csp
+    
+    return response
 
 # --- Request/Response Models ---
 

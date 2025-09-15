@@ -155,24 +155,24 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className="h-5 w-5 text-green-400" />;
       case 'in_progress':
         return (
-          <div className="h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="h-5 w-5 border-2 border-statslugger-orange-primary border-t-transparent rounded-full animate-spin" />
         );
       default:
-        return <Clock className="h-5 w-5 text-gray-400" />;
+        return <Clock className="h-5 w-5 text-statslugger-text-muted" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-50 border-green-200';
+        return 'bg-green-900/30 border-green-600/30';
       case 'in_progress':
-        return 'bg-blue-50 border-blue-200';
+        return 'bg-statslugger-orange-primary/20 border-statslugger-orange-primary/30';
       default:
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-statslugger-navy-primary border-statslugger-navy-border';
     }
   };
 
@@ -189,22 +189,22 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-6">
+    <div className="bg-statslugger-navy-deep rounded-lg shadow-sm border border-statslugger-navy-border p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-statslugger-text-primary">
             AI Analysis in Progress
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-statslugger-text-secondary">
             {analysis.team} • {analysis.original_request}
           </p>
         </div>
         
         <div className="text-right">
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="text-2xl font-bold text-statslugger-orange-primary">
             {Math.round(progressPercentage)}%
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-statslugger-text-muted">
             {completedSteps} of {steps.length} complete
           </div>
         </div>
@@ -212,9 +212,9 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
 
       {/* Progress Bar */}
       <div className="mb-6">
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-statslugger-navy-border rounded-full h-2">
           <div 
-            className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+            className="bg-gradient-to-r from-statslugger-orange-primary to-statslugger-orange-secondary h-2 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
@@ -239,23 +239,23 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2">
                     <StepIcon className={`h-4 w-4 text-${step.color}-500`} />
-                    <h4 className="font-medium text-gray-900">
+                    <h4 className="font-medium text-statslugger-text-primary">
                       {step.name}
                     </h4>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-statslugger-text-secondary mt-1">
                     {step.description}
                   </p>
                 </div>
                 
                 <div className="flex-shrink-0">
                   {status === 'completed' && (
-                    <span className="text-xs font-medium text-green-600">
+                    <span className="text-xs font-medium text-green-400">
                       ✓ Done
                     </span>
                   )}
                   {status === 'in_progress' && (
-                    <span className="text-xs font-medium text-blue-600">
+                    <span className="text-xs font-medium text-statslugger-orange-primary">
                       Working...
                     </span>
                   )}
@@ -268,10 +268,10 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
 
       {/* Error Messages */}
       {error && (
-        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="mt-6 p-4 bg-red-900/30 border border-red-600/30 rounded-lg">
           <div className="flex items-center space-x-2">
             <AlertCircle className="h-5 w-5 text-red-500" />
-            <span className="font-medium text-red-900">Progress Update Failed</span>
+            <span className="font-medium text-red-300">Progress Update Failed</span>
           </div>
           <p className="text-sm text-red-700 mt-1">
             {error}
@@ -281,7 +281,7 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
 
       {/* Status Messages */}
       {analysis.status === 'error' && (
-        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="mt-6 p-4 bg-red-900/30 border border-red-600/30 rounded-lg">
           <div className="flex items-center space-x-2">
             <AlertCircle className="h-5 w-5 text-red-500" />
             <span className="font-medium text-red-900">Analysis Failed</span>
@@ -293,7 +293,7 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
       )}
 
       {analysis.status === 'completed' && (
-        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div className="mt-6 p-4 bg-green-900/30 border border-green-600/30 rounded-lg">
           <div className="flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
             <span className="font-medium text-green-900">Analysis Complete!</span>
@@ -306,7 +306,7 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
 
       {/* Time Estimation */}
       {analysis.status !== 'completed' && analysis.status !== 'error' && (
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mt-6 p-4 bg-statslugger-orange-primary/20 border border-statslugger-orange-primary/30 rounded-lg">
           <p className="text-sm text-blue-700">
             <Clock className="inline h-4 w-4 mr-1" />
             {progress?.estimated_remaining_time ? (

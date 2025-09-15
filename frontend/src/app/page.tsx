@@ -118,10 +118,10 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-statslugger-navy-primary flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Baseball Trade AI...</p>
+          <div className="w-12 h-12 border-4 border-statslugger-navy-border border-t-statslugger-orange-primary rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-statslugger-text-secondary">Loading StatSlugger Baseball Trade AI...</p>
         </div>
       </div>
     );
@@ -129,9 +129,9 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-statslugger-navy-primary flex items-center justify-center">
         <div className="text-center">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg max-w-md">
+          <div className="bg-red-900/30 border border-red-600/30 text-red-300 px-6 py-4 rounded-lg max-w-md">
             <strong className="font-bold">Error!</strong>
             <span className="block mt-1">{error}</span>
           </div>
@@ -147,15 +147,15 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-statslugger-navy-primary">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-statslugger-navy-deep shadow-sm border-b border-statslugger-navy-border">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Baseball Trade AI
+          <h1 className="text-3xl font-bold text-statslugger-text-primary mb-2">
+            <span className="text-statslugger-orange-primary">StatSlugger</span> Baseball Trade AI
           </h1>
-          <p className="text-gray-600 mb-4">
-            AI-Powered MLB Trade Analysis with Multi-Agent System
+          <p className="text-statslugger-text-secondary mb-4">
+            AI-Powered MLB Trade Analysis with Advanced Multi-Agent Intelligence
           </p>
           
           {systemHealth && (
@@ -163,10 +163,10 @@ export default function HomePage() {
               <span className="status-operational px-3 py-1 rounded-full border">
                 Status: {systemHealth.status}
               </span>
-              <span className="text-gray-600">
+              <span className="text-statslugger-text-muted">
                 Version: {systemHealth.version}
               </span>
-              <span className="text-gray-600">
+              <span className="text-statslugger-text-muted">
                 Teams: {teams.length}
               </span>
             </div>
@@ -177,7 +177,7 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* AI Features Overview */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <h2 className="text-xl font-semibold text-statslugger-text-primary mb-4">
             AI-Powered Features
           </h2>
           {systemHealth && (
@@ -187,8 +187,8 @@ export default function HomePage() {
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
                     <div>
-                      <h3 className="font-medium text-gray-900 text-sm">{feature}</h3>
-                      <p className="text-gray-600 text-xs">Available now</p>
+                      <h3 className="font-medium text-statslugger-text-primary text-sm">{feature}</h3>
+                      <p className="text-statslugger-text-muted text-xs">Available now</p>
                     </div>
                   </div>
                 </div>
@@ -200,14 +200,14 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Team Selection */}
           <div className="trade-card">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-xl font-semibold text-statslugger-text-primary mb-4">
               Select Your Team
             </h2>
             
             <select 
               value={selectedTeam}
               onChange={(e) => setSelectedTeam(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-statslugger-navy-border bg-statslugger-navy-deep rounded-md px-3 py-2 text-base text-statslugger-text-primary focus:outline-none focus:ring-2 focus:ring-statslugger-orange-primary focus:border-statslugger-orange-primary"
             >
               <option value="">Choose a team...</option>
               {teams.map((team) => (
@@ -218,11 +218,11 @@ export default function HomePage() {
             </select>
             
             {selectedTeam && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-blue-800 text-sm">
+              <div className="mt-4 p-4 bg-statslugger-orange-primary/20 border border-statslugger-orange-primary/30 rounded-lg">
+                <p className="text-statslugger-orange-primary text-sm">
                   Selected: <strong>{teams.find(t => (t.team_key || t.abbreviation) === selectedTeam)?.name}</strong>
                 </p>
-                <p className="text-blue-600 text-xs mt-1">
+                <p className="text-statslugger-orange-secondary text-xs mt-1">
                   Ready for AI trade analysis
                 </p>
               </div>
@@ -231,13 +231,13 @@ export default function HomePage() {
 
           {/* Trade Request Form */}
           <div className="trade-card">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-xl font-semibold text-statslugger-text-primary mb-4">
               Trade Request
             </h2>
             
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-statslugger-text-primary mb-2">
                   Describe what you're looking for:
                 </label>
                 <textarea
@@ -245,7 +245,7 @@ export default function HomePage() {
                   onChange={(e) => setTradeRequest(e.target.value)}
                   placeholder="e.g., Find me a starting pitcher with an ERA under 4.0 and at least 3 years of team control"
                   rows={4}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+                  className="w-full border border-statslugger-navy-border bg-statslugger-navy-deep rounded-md px-3 py-2 text-sm text-statslugger-text-primary placeholder:text-statslugger-text-muted focus:outline-none focus:ring-2 focus:ring-statslugger-orange-primary focus:border-statslugger-orange-primary resize-vertical"
                 />
               </div>
               
@@ -254,10 +254,10 @@ export default function HomePage() {
                 disabled={!selectedTeam || !tradeRequest || analyzing}
                 className={`w-full py-3 px-4 rounded-md font-medium text-base transition-colors ${
                   analyzing
-                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                    ? 'bg-statslugger-navy-border text-statslugger-text-muted cursor-not-allowed'
                     : !selectedTeam || !tradeRequest
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+                    ? 'bg-statslugger-navy-border text-statslugger-text-muted cursor-not-allowed'
+                    : 'bg-gradient-to-r from-statslugger-orange-primary to-statslugger-orange-secondary text-white hover:from-statslugger-orange-secondary hover:to-statslugger-orange-dark hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-statslugger-orange-primary focus:ring-offset-2 focus:ring-offset-statslugger-navy-primary'
                 }`}
               >
                 {analyzing ? 'Analyzing Trade...' : 'Analyze Trade'}
@@ -269,23 +269,23 @@ export default function HomePage() {
         {/* Analysis Results */}
         {analysis && (
           <div className="mt-8 trade-card">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-xl font-semibold text-statslugger-text-primary mb-4">
               Analysis Results
             </h2>
             
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">
+            <div className="bg-statslugger-navy-primary rounded-lg p-4 border border-statslugger-navy-border">
+              <h3 className="font-medium text-statslugger-text-primary mb-2">
                 Team: {analysis.team}
               </h3>
-              <p className="text-gray-700 mb-4">
+              <p className="text-statslugger-text-secondary mb-4">
                 <strong>Request:</strong> {analysis.original_request}
               </p>
               
               <div className="mb-4">
-                <h4 className="font-medium text-gray-900 mb-2">
+                <h4 className="font-medium text-statslugger-text-primary mb-2">
                   Parsed Analysis:
                 </h4>
-                <div className="space-y-1 text-sm text-gray-600">
+                <div className="space-y-1 text-sm text-statslugger-text-secondary">
                   <p><span className="font-medium">Primary Need:</span> {analysis.parsed_analysis.primary_need}</p>
                   <p><span className="font-medium">Urgency:</span> {analysis.parsed_analysis.urgency}</p>
                   <p><span className="font-medium">Confidence:</span> {(analysis.parsed_analysis.confidence_score * 100).toFixed(1)}%</p>
@@ -293,13 +293,13 @@ export default function HomePage() {
               </div>
 
               <div>
-                <h4 className="font-medium text-gray-900 mb-2">
+                <h4 className="font-medium text-statslugger-text-primary mb-2">
                   Recommended Next Steps:
                 </h4>
-                <ul className="space-y-1 text-sm text-gray-600">
+                <ul className="space-y-1 text-sm text-statslugger-text-secondary">
                   {analysis.recommended_next_steps.map((step: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1">•</span>
+                      <span className="text-statslugger-orange-primary mt-1">•</span>
                       <span>{step}</span>
                     </li>
                   ))}
@@ -312,17 +312,17 @@ export default function HomePage() {
         {/* API Endpoints Information */}
         {systemHealth && (
           <div className="mt-8 trade-card">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-xl font-semibold text-statslugger-text-primary mb-4">
               Available API Endpoints
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(systemHealth.endpoints).map(([name, endpoint]) => (
-                <div key={name} className="p-3 bg-gray-50 rounded-lg">
-                  <h3 className="font-medium text-gray-900 text-sm mb-1">
+                <div key={name} className="p-3 bg-statslugger-navy-primary rounded-lg border border-statslugger-navy-border">
+                  <h3 className="font-medium text-statslugger-text-primary text-sm mb-1">
                     {name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </h3>
-                  <code className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                  <code className="text-xs text-statslugger-orange-primary bg-statslugger-orange-primary/20 px-2 py-1 rounded">
                     {endpoint}
                   </code>
                 </div>

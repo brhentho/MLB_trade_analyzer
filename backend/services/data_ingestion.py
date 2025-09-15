@@ -53,35 +53,84 @@ class DataIngestionService:
         supabase_key = os.getenv('SUPABASE_SECRET_KEY')
         
         if not supabase_url or not supabase_key:
-            raise ValueError("Supabase credentials not found in environment variables")
+            raise ValueError("❌ Supabase credentials not found. Please check your .env file")
         
         self.supabase: Client = create_client(supabase_url, supabase_key)
         
-        # Rate limiting
-        self.request_delay = 1.0  # 1 second between requests to be respectful
+        # Rate limiting - be respectful to data sources
+        self.request_delay = float(os.getenv('DATA_UPDATE_DELAY', '1.0'))
         
         # Cache for MLB team mappings
         self._team_cache = {}
         self._load_team_mappings()
+        
+        # Track stats for monitoring
+        self.update_stats = {
+            'last_update': None,
+            'players_updated': 0,
+            'errors': 0,
+            'duration': 0
+        }
     
     def _load_team_mappings(self) -> None:
         """Load team mappings from Supabase"""
         try:
             response = self.supabase.table('teams').select('*').execute()
-            self._team_cache = {
-                team['team_key']: team for team in response.data
-            }
-            # Also create abbreviation mapping
+            
+            if not response.data:
+                logger.error("❌ No teams found in database. Please run the migration files first!")
+                raise ValueError("Teams table is empty. Run migration files first.")
+            
+            self._team_cache = {}
+            
+            # Create comprehensive mapping by team abbreviation and key
             for team in response.data:
                 self._team_cache[team['abbreviation']] = team
+                self._team_cache[team['team_key']] = team
+                # Also handle common abbreviation variations
+                self._team_cache[team['abbreviation'].upper()] = team
+                self._team_cache[team['abbreviation'].lower()] = team
+            
+            # Add common variations and fixes for pybaseball data
+            abbreviation_fixes = {
+                'WSN': 'WSH',  # Washington Nationals
+                'CWS': 'CHW',  # White Sox
+                'KCR': 'KC',   # Royals
+                'SDP': 'SD',   # Padres
+                'SFG': 'SF',   # Giants
+                'TBR': 'TB',   # Rays
+                'LAA': 'ANA',  # Angels (sometimes)
+            }
+            
+            for old_abbr, new_abbr in abbreviation_fixes.items():
+                if new_abbr in self._team_cache:
+                    self._team_cache[old_abbr] = self._team_cache[new_abbr]
+            
             logger.info(f"Loaded {len(response.data)} team mappings")
         except Exception as e:
             logger.error(f"Failed to load team mappings: {e}")
     
     def _get_team_id(self, team_identifier: str) -> Optional[int]:
         """Get team ID from team key or abbreviation"""
+        if not team_identifier:
+            return None
+            
+        # Try exact match first
+        team_data = self._team_cache.get(team_identifier)
+        if team_data:
+            return team_data['id']
+        
+        # Try uppercase match
+        team_data = self._team_cache.get(team_identifier.upper())
+        if team_data:
+            return team_data['id']
+            
+        # Try lowercase match
         team_data = self._team_cache.get(team_identifier.lower())
-        return team_data['id'] if team_data else None
+        if team_data:
+            return team_data['id']
+            
+        return None
     
     async def _rate_limit(self):
         """Apply rate limiting between requests"""
@@ -365,6 +414,244 @@ class DataIngestionService:
         except Exception as e:
             logger.error(f"Error fetching roster for {team_key}: {e}")
             return []
+    
+    async def update_current_season_stats(self) -> Dict[str, Any]:
+        """
+        Update current season statistics for all players
+        """
+        logger.info("🔄 Starting current season stats update...")
+        start_time = datetime.now()
+        
+        result = {
+            'players_updated': 0,
+            'new_players': 0,
+            'errors': 0,
+            'duration': 0,
+            'last_update': start_time.isoformat()
+        }
+        
+        try:
+            current_year = datetime.now().year
+            
+            # Get current season data
+            logger.info(f"📊 Fetching {current_year} season data...")
+            batting_data = batting_stats(current_year)
+            await self._rate_limit()
+            
+            pitching_data = pitching_stats(current_year)
+            await self._rate_limit()
+            
+            # Update batting players
+            for _, player in batting_data.iterrows():
+                try:
+                    team_abbr = str(player.get('Team', '')).strip()
+                    if team_abbr in ['', '- - -', 'TOT']:
+                        continue
+                    
+                    team_id = self._get_team_id(team_abbr)
+                    if not team_id:
+                        continue
+                    
+                    # Check if player exists
+                    existing = self.supabase.table('players').select('*').eq('name', player.get('Name')).eq('team_id', team_id).execute()
+                    
+                    player_data = {
+                        'name': str(player.get('Name', '')).strip(),
+                        'team_id': team_id,
+                        'position': 'Batter',
+                        'age': int(player.get('Age', 0)) if pd.notna(player.get('Age')) else None,
+                        'war': float(player.get('WAR', 0)) if pd.notna(player.get('WAR')) else 0.0,
+                        'stats': {
+                            'type': 'batting',
+                            'season': current_year,
+                            'avg': float(player.get('AVG', 0)) if pd.notna(player.get('AVG')) else 0.0,
+                            'obp': float(player.get('OBP', 0)) if pd.notna(player.get('OBP')) else 0.0,
+                            'slg': float(player.get('SLG', 0)) if pd.notna(player.get('SLG')) else 0.0,
+                            'ops': float(player.get('OPS', 0)) if pd.notna(player.get('OPS')) else 0.0,
+                            'home_runs': int(player.get('HR', 0)) if pd.notna(player.get('HR')) else 0,
+                            'rbi': int(player.get('RBI', 0)) if pd.notna(player.get('RBI')) else 0,
+                            'stolen_bases': int(player.get('SB', 0)) if pd.notna(player.get('SB')) else 0,
+                            'games': int(player.get('G', 0)) if pd.notna(player.get('G')) else 0,
+                            'team': team_abbr
+                        }
+                    }
+                    
+                    if existing.data:
+                        # Update existing player
+                        player_id = existing.data[0]['id']
+                        self.supabase.table('players').delete().eq('id', player_id).execute()
+                        self.supabase.table('players').insert(player_data).execute()
+                        result['players_updated'] += 1
+                    else:
+                        # Insert new player
+                        self.supabase.table('players').insert(player_data).execute()
+                        result['new_players'] += 1
+                        
+                except Exception as e:
+                    logger.error(f"Error updating batting player {player.get('Name', 'Unknown')}: {e}")
+                    result['errors'] += 1
+            
+            # Update pitching players
+            for _, player in pitching_data.iterrows():
+                try:
+                    team_abbr = str(player.get('Team', '')).strip()
+                    if team_abbr in ['', '- - -', 'TOT']:
+                        continue
+                    
+                    team_id = self._get_team_id(team_abbr)
+                    if not team_id:
+                        continue
+                    
+                    # Check if player exists
+                    existing = self.supabase.table('players').select('*').eq('name', player.get('Name')).eq('team_id', team_id).execute()
+                    
+                    player_data = {
+                        'name': str(player.get('Name', '')).strip(),
+                        'team_id': team_id,
+                        'position': 'Pitcher',
+                        'age': int(player.get('Age', 0)) if pd.notna(player.get('Age')) else None,
+                        'war': float(player.get('WAR', 0)) if pd.notna(player.get('WAR')) else 0.0,
+                        'stats': {
+                            'type': 'pitching',
+                            'season': current_year,
+                            'era': float(player.get('ERA', 0)) if pd.notna(player.get('ERA')) else 0.0,
+                            'whip': float(player.get('WHIP', 0)) if pd.notna(player.get('WHIP')) else 0.0,
+                            'fip': float(player.get('FIP', 0)) if pd.notna(player.get('FIP')) else 0.0,
+                            'wins': int(player.get('W', 0)) if pd.notna(player.get('W')) else 0,
+                            'saves': int(player.get('SV', 0)) if pd.notna(player.get('SV')) else 0,
+                            'strikeouts': int(player.get('SO', 0)) if pd.notna(player.get('SO')) else 0,
+                            'innings_pitched': float(player.get('IP', 0)) if pd.notna(player.get('IP')) else 0.0,
+                            'games': int(player.get('G', 0)) if pd.notna(player.get('G')) else 0,
+                            'team': team_abbr
+                        }
+                    }
+                    
+                    if existing.data:
+                        # Update existing player
+                        player_id = existing.data[0]['id']
+                        self.supabase.table('players').delete().eq('id', player_id).execute()
+                        self.supabase.table('players').insert(player_data).execute()
+                        result['players_updated'] += 1
+                    else:
+                        # Insert new player
+                        self.supabase.table('players').insert(player_data).execute()
+                        result['new_players'] += 1
+                        
+                except Exception as e:
+                    logger.error(f"Error updating pitching player {player.get('Name', 'Unknown')}: {e}")
+                    result['errors'] += 1
+            
+            result['duration'] = (datetime.now() - start_time).total_seconds()
+            
+            # Update internal stats
+            self.update_stats.update(result)
+            
+            logger.info(f"✅ Stats update complete: {result['players_updated']} updated, {result['new_players']} new in {result['duration']:.1f}s")
+            
+        except Exception as e:
+            logger.error(f"❌ Error in current season stats update: {e}")
+            result['errors'] += 1
+        
+        return result
+    
+    async def check_roster_moves(self) -> Dict[str, Any]:
+        """
+        Check for recent roster moves and transactions
+        """
+        logger.info("📋 Checking roster moves...")
+        
+        result = {
+            'moves_detected': 0,
+            'players_affected': [],
+            'errors': 0
+        }
+        
+        try:
+            # For now, this is a placeholder - would require MLB transaction API
+            # In a real implementation, this would check for:
+            # - DFA (Designated for Assignment)
+            # - Option to minors
+            # - Trades
+            # - Free agent signings
+            # - Injury list moves
+            
+            logger.info("📋 Roster moves check complete (placeholder)")
+            
+        except Exception as e:
+            logger.error(f"❌ Error checking roster moves: {e}")
+            result['errors'] += 1
+        
+        return result
+    
+    async def update_prospect_rankings(self) -> Dict[str, Any]:
+        """
+        Update prospect rankings (weekly task)
+        """
+        logger.info("🌟 Updating prospect rankings...")
+        
+        result = {
+            'prospects_updated': 0,
+            'errors': 0
+        }
+        
+        try:
+            # Check if prospects table exists
+            try:
+                test_result = self.supabase.table('prospects').select('count').execute()
+                logger.info("✅ Prospects table accessible")
+            except Exception:
+                logger.warning("⚠️  Prospects table not found - skipping prospect updates")
+                return result
+            
+            # This would run the prospect seeding script
+            # For now, it's a placeholder
+            logger.info("🌟 Prospect rankings update complete (placeholder)")
+            
+        except Exception as e:
+            logger.error(f"❌ Error updating prospect rankings: {e}")
+            result['errors'] += 1
+        
+        return result
+    
+    async def run_daily_update(self) -> Dict[str, Any]:
+        """
+        Run comprehensive daily data update
+        """
+        logger.info("🚀 Starting daily data update...")
+        start_time = datetime.now()
+        
+        overall_result = {
+            'success': False,
+            'start_time': start_time.isoformat(),
+            'stats_update': None,
+            'roster_moves': None,
+            'total_duration': 0,
+            'errors': 0
+        }
+        
+        try:
+            # Update current season stats
+            overall_result['stats_update'] = await self.update_current_season_stats()
+            
+            # Check roster moves
+            overall_result['roster_moves'] = await self.check_roster_moves()
+            
+            # Calculate totals
+            overall_result['total_duration'] = (datetime.now() - start_time).total_seconds()
+            overall_result['errors'] = (
+                overall_result['stats_update'].get('errors', 0) +
+                overall_result['roster_moves'].get('errors', 0)
+            )
+            
+            overall_result['success'] = overall_result['errors'] == 0
+            
+            logger.info(f"✅ Daily update complete in {overall_result['total_duration']:.1f}s")
+            
+        except Exception as e:
+            logger.error(f"❌ Daily update failed: {e}")
+            overall_result['error'] = str(e)
+        
+        return overall_result
 
 # Singleton instance
 data_service = DataIngestionService()
