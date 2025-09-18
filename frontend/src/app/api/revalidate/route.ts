@@ -5,7 +5,21 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
-import { CACHE_TAGS } from '@/lib/server-api';
+
+const CACHE_TAGS = {
+  teams: 'teams',
+  players: 'players',
+  trades: 'trades',
+  health: 'health',
+  TEAMS: 'teams',
+  PLAYERS: 'players',
+  TRADES: 'trades',
+  TEAM_ROSTER: 'team-roster',
+  TEAM_NEEDS: 'team-needs',
+  PLAYER_STATS: 'player-stats',
+  TRADE_ANALYSIS: 'trade-analysis',
+  SYSTEM_HEALTH: 'system-health',
+} as const;
 
 // Revalidation secret for security - SECURE IMPLEMENTATION
 const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET;

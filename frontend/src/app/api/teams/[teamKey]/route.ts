@@ -4,7 +4,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { serverAPI } from '@/lib/server-api';
 import { z } from 'zod';
 
 const TeamParamsSchema = z.object({
@@ -21,15 +20,17 @@ export async function GET(
     // Validate team key parameter
     const { teamKey } = TeamParamsSchema.parse(params);
     
-    // Get team data 
-    const teamResponse = await serverAPI.teams.getById(teamKey);
-
-    // Process results
-    const teamData: any = {
+    // Mock team data for now
+    const teamData = {
       teamKey,
       timestamp: new Date().toISOString(),
-      data: teamResponse.success ? teamResponse.data : null,
-      error: !teamResponse.success ? teamResponse.error : null,
+      data: {
+        id: teamKey,
+        name: `Team ${teamKey.toUpperCase()}`,
+        division: 'AL East',
+        // Mock data until backend is connected
+      },
+      error: null,
     };
 
     // For now, just return basic team data

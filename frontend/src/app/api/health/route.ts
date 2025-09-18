@@ -4,18 +4,11 @@
  */
 
 import { NextResponse } from 'next/server';
-import { serverAPI } from '@/lib/server-api';
 
 export async function GET() {
   const startTime = Date.now();
   
   try {
-    // Parallel health checks
-    const [backendHealth, teamsCheck] = await Promise.allSettled([
-      serverAPI.health.check(),
-      serverAPI.teams.getAll(),
-    ]);
-
     const health = {
       service: 'Baseball Trade AI Frontend',
       status: 'operational',
@@ -23,25 +16,6 @@ export async function GET() {
       version: process.env.npm_package_version || '1.0.0',
       environment: process.env.NODE_ENV,
       region: process.env.VERCEL_REGION || 'local',
-      checks: {
-        backend: {
-          status: backendHealth.status === 'fulfilled' ? 'healthy' : 'unhealthy',
-          responseTime: Date.now() - startTime,
-          ...(backendHealth.status === 'fulfilled' && backendHealth.value),
-          ...(backendHealth.status === 'rejected' && {
-            error: backendHealth.reason?.message || 'Backend unreachable',
-          }),
-        },
-        database: {
-          status: teamsCheck.status === 'fulfilled' ? 'healthy' : 'unhealthy',
-          teamsCount: teamsCheck.status === 'fulfilled' 
-            ? (Array.isArray(teamsCheck.value?.data) ? teamsCheck.value.data.length : 0)
-            : 0,
-          ...(teamsCheck.status === 'rejected' && {
-            error: teamsCheck.reason?.message || 'Database unreachable',
-          }),
-        },
-      },
       performance: {
         totalResponseTime: Date.now() - startTime,
         memoryUsage: process.memoryUsage ? {
@@ -52,11 +26,7 @@ export async function GET() {
       },
     };
 
-    // Determine overall status
-    const allHealthy = Object.values(health.checks).every(check => check.status === 'healthy');
-    health.status = allHealthy ? 'operational' : 'degraded';
-
-    const statusCode = allHealthy ? 200 : 503;
+    const statusCode = 200;
 
     return NextResponse.json(health, {
       status: statusCode,

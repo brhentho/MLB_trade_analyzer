@@ -4,8 +4,6 @@
  */
 
 import { NextResponse } from 'next/server';
-import { serverAPI } from '@/lib/server-api';
-// import { z } from 'zod'; // Unused for now
 
 // Response time logging
 function logResponseTime(startTime: number, endpoint: string) {
@@ -20,8 +18,14 @@ export async function GET() {
   const endpoint = '/api/teams';
 
   try {
-    // Get teams data with caching
-    const teamsData = await serverAPI.teams.getAll();
+    // Mock teams data for now
+    const teamsData = {
+      success: true,
+      data: [
+        { id: 'nyy', name: 'New York Yankees', division: 'AL East' },
+        { id: 'bos', name: 'Boston Red Sox', division: 'AL East' },
+      ]
+    };
     
     logResponseTime(startTime, endpoint);
     
