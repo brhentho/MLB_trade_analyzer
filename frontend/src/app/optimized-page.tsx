@@ -444,7 +444,7 @@ export default function OptimizedHomePage() {
                     <div className="mt-2 space-y-1 text-xs text-gray-600">
                       <p>Teams Query: {teamsQuery.dataUpdatedAt ? 'Cached' : 'Fresh'}</p>
                       <p>Health Check: {systemHealthQuery.dataUpdatedAt ? 'Cached' : 'Fresh'}</p>
-                      <p>Streaming: {streamingAnalysis.streaming.connected ? 'Connected' : 'Disconnected'}</p>
+                      <p>Streaming: {streamingAnalysis.isStreaming ? 'Connected' : 'Disconnected'}</p>
                     </div>
                   </details>
                 </div>

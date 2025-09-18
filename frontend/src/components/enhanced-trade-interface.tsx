@@ -13,11 +13,9 @@ import {
   Building2,
   TrendingUp,
   Activity,
-  Shield,
   Zap,
   AlertCircle,
   CheckCircle,
-  Clock,
   RefreshCw,
 } from 'lucide-react';
 

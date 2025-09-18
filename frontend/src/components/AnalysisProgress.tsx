@@ -72,16 +72,6 @@ export default function AnalysisProgress({ analysis, onUpdate }: AnalysisProgres
     return () => clearInterval(interval);
   }, [analysis.analysis_id, analysis.status, onUpdate]);
 
-  // Map backend department names to frontend steps
-  const departmentMapping: Record<string, string> = {
-    'Front Office Leadership': 'coordination',
-    'Scouting Department': 'scouting',
-    'Analytics Department': 'analytics',
-    'Player Development': 'development',
-    'Business Operations': 'business',
-    'Team Management': 'gm_perspective',
-    'Commissioner Office': 'compliance'
-  };
 
   const steps = [
     {
