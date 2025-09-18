@@ -1,4 +1,21 @@
 {
+  "version": 2,
+  "name": "baseball-trade-ai",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "zeroConfig": true
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
   "functions": {
     "frontend/src/app/api/**/*.ts": {
       "runtime": "nodejs18.x"
