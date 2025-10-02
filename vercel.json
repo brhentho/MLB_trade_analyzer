@@ -1,10 +1,4 @@
 {
-  "version": 2,
-  "name": "mlb-trade-analyzer",
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/next"
-    }
-  ]
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/.next"
 }
