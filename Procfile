@@ -1,1 +1,1 @@
-web: cd backend && python mvp_main.py
+web: python backend/mvp_main.py
