@@ -1,0 +1,68 @@
+/* Card flip: the inner sheet turns on Y. globals.css zeroes durations under reduced motion, so it swaps instantly. */
+.scene {
+  perspective: 1200px;
+}
+
+.sheet {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+/* Card backs are narrow: give the shared RatingBar rows a shorter label column so the bar stays readable. */
+.bars > div {
+  grid-template-columns: 4.75rem 1fr 1.5rem;
+}
+
+/* Cards slide into the binder sleeve: short rise + fade, only the first 4 are staggered. */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.enter {
+  animation: slideIn var(--dur-slow) var(--ease-out) both;
+}
+
+/* Detail sheet enters from the right edge it is anchored to. */
+.sheetPanel {
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    opacity var(--dur-base) var(--ease-out);
+}
+
+.sheetHidden {
+  opacity: 0;
+  transform: translateX(24px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter {
+    animation: none;
+  }
+  .sheetHidden {
+    transform: none;
+  }
+}
